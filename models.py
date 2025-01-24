@@ -15,6 +15,7 @@ class Restaurant(db.Model):
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     restaurant_id = db.Column(db.Integer, db.ForeignKey("restaurant.id"), nullable=False)
+    user = db.Column(db.String(100), nullable=False)
     rating = db.Column(db.Float, nullable=False)
     comment = db.Column(db.String(300), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime)

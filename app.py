@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from models import db, ma, Restaurant, Review, RestaurantSchema, ReviewSchema
 from flask_migrate import Migrate
 from sqlalchemy import func
+from datetime import datetime, timezone
 
 
 app = Flask(__name__)
@@ -75,10 +76,24 @@ def get_restaurants_by_location(location):
 @app.route("/restaurants/<int:restaurant_id>/reviews", methods=["POST"])
 def add_review(restaurant_id):
     restaurant = Restaurant.query.get_or_404(restaurant_id)
-    rating = request.json["rating"]
+    
+    rating = request.json.get("rating")
     comment = request.json.get("comment", "")
+    user = request.json.get("user")
+    timestamp = request.json.get("timestamp", datetime.now(timezone.utc)) 
+    
 
-    new_review = Review(rating=rating, comment=comment, restaurant_id=restaurant.id)
+    if rating is None:
+        return jsonify({"error": "Rating is required"}), 400
+    
+    new_review = Review(
+        rating=rating, 
+        comment=comment, 
+        restaurant_id=restaurant.id,
+        user=user,
+        timestamp=timestamp  
+    )
+
     db.session.add(new_review)
     db.session.commit()
 
