@@ -7,3 +7,79 @@ I opted to use **Marshmallow** for serialization because it is build to work wel
 I chose **SQLAlchemy** for querying the database because it eliminates the need to write raw SQL queries, which can be error prone. It integrates really well with Flask, and it is simple to define an entity and its relationships. I also installed Flask Migrate so that I could update the database using CLI commands more easily.
 
 This was a fun project from the get-go because I was implementing a lot of the database concepts that we have learned this semester in INLS 523 in a hands-on way.
+
+API Endpoints
+
+Restaurants
+
+1. Add a Restaurant
+
+Endpoint: POST /restaurants
+
+Request Body:
+
+{
+  "name": "Restaurant Name",
+  "cuisine_type": "Cuisine Type",
+  "location": "Location"
+}
+
+Response: Returns the created restaurant object.
+
+2. Get All Restaurants
+
+Endpoint: GET /restaurants
+
+Response: List of all restaurants.
+
+3. Get Restaurant by ID
+
+Endpoint: GET /restaurants/<id>
+
+Response: Restaurant details.
+
+4. Search Restaurants by Cuisine Type
+
+Endpoint: GET /restaurants/cuisine/<cuisine_type>
+
+Response: List of restaurants with the given cuisine type.
+
+5. Search Restaurants by Location
+
+Endpoint: GET /restaurants/location/<location>
+
+Response: List of restaurants in the given location.
+
+6. Search Restaurants by Name
+
+Endpoint: GET /restaurants/name-search/<name>
+
+Response: List of restaurants matching the given name.
+
+Reviews
+
+1. Add a Review to a Restaurant
+
+Endpoint: POST /restaurants/<restaurant_id>/reviews
+
+Request Body:
+
+{
+  "rating": 4.5,
+  "comment": "Great food!",
+  "user": "username"
+}
+
+Response: The created review object.
+
+2. Get Reviews for a Restaurant
+
+Endpoint: GET /restaurants/<restaurant_id>/reviews
+
+Response: List of reviews for the given restaurant.
+
+3. Get Reviews by User
+
+Endpoint: GET /restaurants/reviews/<user>
+
+Response: List of reviews written by the user.
