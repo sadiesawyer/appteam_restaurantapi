@@ -99,5 +99,18 @@ def add_review(restaurant_id):
 
     return review_schema.jsonify(new_review), 201
 
+#get restaurant reviews
+@app.route("/restaurants/<int:restaurant_id>/reviews", methods=["GET"])
+def get_reviews(restaurant_id):
+    reviews = Review.query.filter_by(restaurant_id=restaurant_id).all()
+    return reviews_schema.jsonify(reviews)
+
+#get reviews by user
+@app.route("/restaurants/reviews/<path:user>", methods=["GET"])
+def get_reviews_by_user(user):
+    reviews = Review.query.filter(func.lower(Review.user) == func.lower(user)).all()
+    return reviews_schema.jsonify(reviews)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
