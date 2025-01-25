@@ -1,14 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from models import db, ma, Restaurant, Review, RestaurantSchema, ReviewSchema
 from flask_migrate import Migrate
 from sqlalchemy import func
 from datetime import datetime, timezone
+from flask_cors import CORS 
 
 
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
+CORS(app)
 db.init_app(app)
 ma.init_app(app)
 migrate = Migrate(app, db)
@@ -21,6 +23,10 @@ reviews_schema = ReviewSchema(many=True)
 
 with app.app_context():
     db.create_all()
+
+@app.route("/")
+def home():
+    return render_template("index.html") 
 
 #endpoint to add a restaurant to the list
 
@@ -70,6 +76,17 @@ def get_restaurants_by_cuisine(cuisine_type):
 def get_restaurants_by_location(location):
     restaurants = Restaurant.query.filter(func.lower(Restaurant.location) == func.lower(location)).all()
     return restaurants_schema.jsonify(restaurants)
+
+#search by name
+@app.route("/restaurants/name-search/<path:name>", methods=["GET"])
+def get_restaurants_by_name(name):
+    restaurants = Restaurant.query.filter(func.lower(Restaurant.name) == func.lower(name)).all()
+    return restaurants_schema.jsonify(restaurants)
+
+
+
+
+
 
 
 #add a review to a restaurant
