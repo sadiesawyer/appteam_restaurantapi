@@ -4,70 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant API Client</title>
+    <!-- Style was generated using Microsoft Copilot. I gave it the following prompt: Here is my simple index.html file. Can you create a style that
+     is a Carolina blue and white color scheme.-->
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 500px; margin: auto; text-align: center; }
-        input, select, button { margin: 10px; padding: 8px; width: 80%; }
-        #result { margin-top: 20px; white-space: pre-wrap; text-align: left; }
+        body { font-family: Arial, sans-serif; background-color: #f0f8ff; color: #005fa3; margin: 20px; }
+        .container { max-width: 600px; margin: auto; text-align: center; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        input, select, button { margin: 10px; padding: 8px; width: 80%; border: 1px solid #005fa3; border-radius: 5px; }
+        button { background-color: #005fa3; color: white; cursor: pointer; }
+        button:hover { background-color: #004080; }
+        #result { margin-top: 20px; white-space: pre-wrap; text-align: left; background: #e6f2ff; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Different options for kinds of searches you can do -->
         <h2>Restaurant API Client</h2>
-
         <label for="queryType">Choose an action:</label>
         <select id="queryType" onchange="updateInputs()">
             <option value="getRestaurants">Get All Restaurants</option>
-            <option value="getRestaurantById">Get Restaurant by ID</option>
-            <option value="getCuisineRatings">Get Average Ratings by Cuisine</option>
-            <option value="getUserTopRestaurant">Get User's Top Restaurant</option>
+            <option value="searchRestaurants">Search Restaurants</option>
+            <option value="addRestaurant">Add a Restaurant</option>
+            <option value="addReview">Add a Review</option>
+            <option value="getReviews">Search Reviews</option>
         </select>
-
-        <input type="text" id="restaurantId" placeholder="Enter Restaurant ID" style="display:none;">
+        <!-- These are the different text boxes that will show up based on the option chosen above, they all start with display
+         none and are updated based on the queryType you select -->
+        <input type="text" id="restaurantName" placeholder="Enter Restaurant Name" style="display:none;">
         <input type="text" id="cuisine" placeholder="Enter Cuisine Type" style="display:none;">
-        <input type="text" id="username" placeholder="Enter Username" style="display:none;">
-        
+        <input type="text" id="location" placeholder="Enter Location" style="display:none;">
+        <input type="text" id="restaurantId" placeholder="Enter Restaurant ID" style="display:none;">
+        <input type="text" id="restaurantCuisine" placeholder="Enter Cuisine Type" style="display:none;">
+        <input type="text" id="restaurantLocation" placeholder="Enter Restaurant Location" style="display:none;">
+        <input type="text" id="reviewUser" placeholder="Enter Your Username" style="display:none;">
+        <input type="number" id="reviewRating" placeholder="Enter Rating (1-5)" style="display:none;">
+        <input type="text" id="reviewComment" placeholder="Enter Review Comment" style="display:none;">
+        <input type="text" id="reviewRestaurantName" placeholder="Enter Restaurant Name for Reviews" style="display:none;">
         <button onclick="fetchData()">Submit</button>
-
         <div id="result"></div>
     </div>
-
-    <script>
-        function updateInputs() {
-            // Hide all inputs initially
-            document.getElementById("restaurantId").style.display = "none";
-            document.getElementById("cuisine").style.display = "none";
-            document.getElementById("username").style.display = "none";
-
+    <script>//javascript for integrating backend
+        function updateInputs() {//updates which text entry boxes show based on queryType selection
+            document.querySelectorAll('input').forEach(input => input.style.display = 'none');
             let queryType = document.getElementById("queryType").value;
-            if (queryType === "getRestaurantById") {
-                document.getElementById("restaurantId").style.display = "block";
-            } else if (queryType === "getCuisineRatings") {
+            if (queryType === "searchRestaurants") {
+                document.getElementById("restaurantName").style.display = "block";
                 document.getElementById("cuisine").style.display = "block";
-            } else if (queryType === "getUserTopRestaurant") {
-                document.getElementById("username").style.display = "block";
+                document.getElementById("location").style.display = "block";
+            } else if (queryType === "addRestaurant") {
+                document.getElementById("restaurantName").style.display = "block";
+                document.getElementById("restaurantCuisine").style.display = "block";
+                document.getElementById("restaurantLocation").style.display = "block";
+            } else if (queryType === "addReview") {
+                document.getElementById("restaurantId").style.display = "block";
+                document.getElementById("reviewUser").style.display = "block";
+                document.getElementById("reviewRating").style.display = "block";
+                document.getElementById("reviewComment").style.display = "block";
+            } else if (queryType === "getReviews") {
+                document.getElementById("restaurantId").style.display = "block";
+                document.getElementById("reviewUser").style.display = "block";
+                document.getElementById("reviewRestaurantName").style.display = "block"; 
             }
         }
 
-        async function fetchData() {
+        async function fetchData() { 
             let queryType = document.getElementById("queryType").value;
             let url = "";
+            let options = { method: "GET" };
+            let body = {};
 
             if (queryType === "getRestaurants") {
                 url = "/restaurants";
-            } else if (queryType === "getRestaurantById") {
-                let id = document.getElementById("restaurantId").value;
-                url = `/restaurants/${id}`;
-            } else if (queryType === "getCuisineRatings") {
+            } else if (queryType === "searchRestaurants") {
+                let name = document.getElementById("restaurantName").value;
                 let cuisine = document.getElementById("cuisine").value;
-                url = `/restaurants/cuisine/${cuisine}`;
-            } else if (queryType === "getUserTopRestaurant") {
-                let user = document.getElementById("username").value;
-                url = `/users/${user}/top-restaurant`;
+                let location = document.getElementById("location").value;
+                let query = new URLSearchParams();
+                if (name) query.append("name", name);
+                if (cuisine) query.append("cuisine_type", cuisine);
+                if (location) query.append("location", location);
+                url = `/restaurants/search?${query.toString()}`;
+            } else if (queryType === "addRestaurant") {
+                url = "/restaurants";
+                options.method = "POST";
+                body = {
+                    name: document.getElementById("restaurantName").value,
+                    cuisine_type: document.getElementById("restaurantCuisine").value,
+                    location: document.getElementById("restaurantLocation").value
+                };
+            } else if (queryType === "addReview") {
+                url = `/restaurants/${document.getElementById("restaurantId").value}/reviews`;
+                options.method = "POST";
+                body = {
+                    user: document.getElementById("reviewUser").value,
+                    rating: document.getElementById("reviewRating").value,
+                    comment: document.getElementById("reviewComment").value
+                };
+            } else if (queryType === "getReviews") {
+                let restaurantId = document.getElementById("restaurantId").value;
+                let user = document.getElementById("reviewUser").value;
+                let restaurantName = document.getElementById("reviewRestaurantName").value;
+
+                let reviewType = 'id';
+                let query = new URLSearchParams();
+
+                if (restaurantName) {
+                    reviewType = 'name'; 
+                    query.append("type", reviewType);
+                    query.append("name", restaurantName);
+                } 
+                else if (user) {
+                    reviewType = 'user'; 
+                    query.append("type", reviewType);
+                    query.append("user", user);
+                }
+                else if (restaurantId) {
+                    query.append("type", reviewType);
+                    query.append("restaurant_id", restaurantId); 
+                }
+
+                url = `/restaurants/reviews?${query.toString()}`; }
+
+            if (options.method === "POST") {
+                options.headers = { "Content-Type": "application/json" };
+                options.body = JSON.stringify(body);
             }
 
-            try {
-                let response = await fetch(url);
+            try {//error handling
+                let response = await fetch(url, options);
                 let data = await response.json();
                 document.getElementById("result").innerText = JSON.stringify(data, null, 2);
             } catch (error) {

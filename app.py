@@ -62,32 +62,24 @@ def get_restaurant(id):
     restaurant = Restaurant.query.get_or_404(id)
     return restaurant_schema.jsonify(restaurant)
 
-#search by cuisine type
-@app.route("/restaurants/cuisine/<string:cuisine_type>", methods=["GET"])
-def get_restaurants_by_cuisine(cuisine_type):
-    restaurants = Restaurant.query.filter(Restaurant.cuisine_type.ilike(f"%{cuisine_type}%")).all()
-    if not restaurants:
-        return jsonify({"message": "No restaurants found with this cuisine type."}), 404
-    
+#updated search function
+@app.route("/restaurants/search", methods=["GET"])
+def search_restaurants():
+    name = request.args.get("name")
+    cuisine_type = request.args.get("cuisine_type")
+    location = request.args.get("location")
+
+    query = Restaurant.query
+
+    if name:
+        query = query.filter(func.lower(Restaurant.name).contains(func.lower(name)))
+    if cuisine_type:
+        query = query.filter(func.lower(Restaurant.cuisine_type).contains(func.lower(cuisine_type)))
+    if location:
+        query = query.filter(func.lower(Restaurant.location).contains(func.lower(location)))
+
+    restaurants = query.all()
     return restaurants_schema.jsonify(restaurants)
-
-#search by location
-@app.route("/restaurants/location/<path:location>", methods=["GET"])
-def get_restaurants_by_location(location):
-    restaurants = Restaurant.query.filter(func.lower(Restaurant.location) == func.lower(location)).all()
-    return restaurants_schema.jsonify(restaurants)
-
-#search by name
-@app.route("/restaurants/name-search/<path:name>", methods=["GET"])
-def get_restaurants_by_name(name):
-    restaurants = Restaurant.query.filter(func.lower(Restaurant.name) == func.lower(name)).all()
-    return restaurants_schema.jsonify(restaurants)
-
-
-
-
-
-
 
 #add a review to a restaurant
 @app.route("/restaurants/<int:restaurant_id>/reviews", methods=["POST"])
@@ -116,17 +108,31 @@ def add_review(restaurant_id):
 
     return review_schema.jsonify(new_review), 201
 
-#get restaurant reviews
-@app.route("/restaurants/<int:restaurant_id>/reviews", methods=["GET"])
-def get_reviews(restaurant_id):
-    reviews = Review.query.filter_by(restaurant_id=restaurant_id).all()
-    return reviews_schema.jsonify(reviews)
+@app.route("/restaurants/reviews", methods=["GET"])
+def get_reviews():
+    query_type = request.args.get("type") 
+    
+    if query_type == 'id':
+        restaurant_id = request.args.get("restaurant_id")
+        reviews = Review.query.filter_by(restaurant_id=restaurant_id).all()
+        return reviews_schema.jsonify(reviews)
+    
+    elif query_type == 'user':
+        user = request.args.get("user")
+        reviews = Review.query.filter(func.lower(Review.user) == func.lower(user)).all()
+        return reviews_schema.jsonify(reviews)
+    
+    elif query_type == 'name':
+        name = request.args.get("name")
+        restaurant = Restaurant.query.filter(func.lower(Restaurant.name) == func.lower(name)).first()
+        if not restaurant:
+            return jsonify({"message": "Restaurant not found."}), 404
+        reviews = Review.query.filter_by(restaurant_id=restaurant.id).all()
+        return reviews_schema.jsonify(reviews)
+    
+    return jsonify({"message": "Invalid query type."}), 400
 
-#get reviews by user
-@app.route("/restaurants/reviews/<path:user>", methods=["GET"])
-def get_reviews_by_user(user):
-    reviews = Review.query.filter(func.lower(Review.user) == func.lower(user)).all()
-    return reviews_schema.jsonify(reviews)
+
 
 
 if __name__ == "__main__":
