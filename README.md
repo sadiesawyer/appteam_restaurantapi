@@ -36,19 +36,8 @@ This was a fun project from the get-go because I was implementing a lot of the d
 - **Method**: `GET`
 - **Response**: Restaurant details (JSON).
 
-#### Search Restaurants by Cuisine
-- **Endpoint**: `/restaurants/cuisine/<string:cuisine_type>`
-- **Method**: `GET`
-- **Response**: List of matching restaurants (JSON).
-
-#### Search Restaurants by Location
-- **Endpoint**: `/restaurants/location/<path:location>`
-- **Method**: `GET`
-- **Response**: List of matching restaurants (JSON).
-
-#### Search Restaurants by Name
-- **Endpoint**: `/restaurants/name-search/<path:name>`
-- **Method**: `GET`
+#### Search Restaurants by Name, Cuisine, or Location
+- 
 - **Response**: List of matching restaurants (JSON).
 
 ---
