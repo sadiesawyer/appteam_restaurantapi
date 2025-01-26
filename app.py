@@ -29,7 +29,12 @@ def home():
     return render_template("index.html") 
 
 #endpoint to add a restaurant to the list
-
+"""{
+  "name": "Juju",
+  "cuisine_type": "Asian",
+  "location": "Durham"
+}
+"""
 @app.route("/restaurants", methods=["POST"])
 def add_restaurant():
     data = request.json
@@ -62,7 +67,7 @@ def get_restaurant(id):
     restaurant = Restaurant.query.get_or_404(id)
     return restaurant_schema.jsonify(restaurant)
 
-#updated search function
+#updated search function ex. /restaurants/search?cuisine_type=American&location=Chapel+hill
 @app.route("/restaurants/search", methods=["GET"])
 def search_restaurants():
     name = request.args.get("name")
@@ -82,7 +87,15 @@ def search_restaurants():
     return restaurants_schema.jsonify(restaurants)
 
 #add a review to a restaurant
-@app.route("/restaurants/<int:restaurant_id>/reviews", methods=["POST"])
+
+"""{
+  "user": "Alice",
+  "rating": 5,
+  "comment": "Amazing sushi! Definitely coming back."
+}
+"""
+###
+@app.route("/restaurants/<int:restaurant_id>/reviews", methods=["POST"]) 
 def add_review(restaurant_id):
     restaurant = Restaurant.query.get_or_404(restaurant_id)
     

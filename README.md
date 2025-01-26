@@ -9,63 +9,61 @@ I chose **SQLAlchemy** for querying the database because it eliminates the need 
 
 This was a fun project from the get-go because I was implementing a lot of the database concepts that we have learned this semester in INLS 523 in a hands-on way.
 
-## Endpoints Documentation
+# API Endpoints
 
-### Restaurants
-
-#### Add a Restaurant
-- **Endpoint**: `/restaurants`
-- **Method**: `POST`
-- **Request Body**:
-  ```json
-  {
-    "name": "string",
-    "cuisine_type": "string",
-    "location": "string"
-  }
-  ```
-- **Response**: Created restaurant details (JSON).
-
-#### Get All Restaurants
-- **Endpoint**: `/restaurants`
-- **Method**: `GET`
-- **Response**: List of all restaurants (JSON).
-
-#### Get Restaurant by ID
-- **Endpoint**: `/restaurants/<int:id>`
-- **Method**: `GET`
-- **Response**: Restaurant details (JSON).
-
-#### Search Restaurants by Name, Cuisine, or Location
-- 
-- **Response**: List of matching restaurants (JSON).
+| HTTP Method | Endpoint | Parameters | Description | Expected Response |
+|------------|----------|------------|-------------|--------------------|
+| **POST** | `/restaurants` | `name`, `cuisine_type`, `location` (JSON body) | Add a new restaurant to the list. | `201 Created` `{ "id": 1, "name": "Example", "cuisine_type": "Italian", "location": "NYC" }` |
+| **GET** | `/restaurants` | None | Fetch all restaurants. | `200 OK` `[ { "id": 1, "name": "Example", "cuisine_type": "Italian", "location": "NYC" }, ... ]` |
+| **GET** | `/restaurants/<int:id>` | `id` (path parameter) | Get details for a specific restaurant by ID. | `200 OK` `{ "id": 1, "name": "Example", "cuisine_type": "Italian", "location": "NYC" }` or `404 Not Found` |
+| **GET** | `/restaurants/search` | `cuisine_type`, `name`, `location` (query parameters) | Search restaurants by name, cuisine, or location. | `200 OK` `[ { "id": 2, "name": "Pizza Place", "cuisine_type": "Italian", "location": "Chicago" } ]` or `404 Not Found` |
+| **POST** | `/restaurants/<int:id>/reviews` | `user`, `comment`, `rating` (JSON body) | Add a review for a specific restaurant. | `201 Created` `{ "review_id": 1, "user": "JohnDoe", "rating": 5, "comment": "Great food!" }` |
+| **GET** | `/restaurants/reviews` | `user`, `restaurant_id`, `restaurant_name` (query parameters) | Get reviews by restaurant ID, user, or restaurant name. | `200 OK` `[ { "review_id": 1, "user": "JohnDoe", "rating": 5, "comment": "Great food!" } ]` or `404 Not Found` |
+| **GET** | `/restaurants/average-rating/<identifier>` | `restaurant_id` or `restaurant_name` (path parameter) | Get the average rating of a restaurant by ID or name. | `200 OK` `{ "restaurant": "Pizza Place", "average_rating": 4.5 }` or `404 Not Found` |
 
 ---
 
-### Reviews
+# Running the API
 
-#### Add a Review
-- **Endpoint**: `/restaurants/<int:restaurant_id>/reviews`
-- **Method**: `POST`
-- **Request Body**:
-  ```json
-  {
-    "rating": "float",
-    "comment": "string",
-    "user": "string",
-    "timestamp": "datetime (optional)"
-  }
-  ```
-- **Response**: Created review details (JSON).
+## Prerequisites
+Before running the API, ensure you have the following installed:
+- Python 3.x
+- Flask (`pip install flask`)
+- Any additional dependencies specified in `requirements.txt` (if applicable)
 
-#### Get Reviews for a Restaurant
-- **Endpoint**: `/restaurants/<int:restaurant_id>/reviews`
-- **Method**: `GET`
-- **Response**: List of reviews for the restaurant (JSON).
+## Steps to Run the API
 
-#### Get Reviews by User
-- **Endpoint**: `/restaurants/reviews/<path:user>`
-- **Method**: `GET`
-- **Response**: List of reviews by the user (JSON).
+1. **Clone the Repository**  
+   ```bash
+   git clone <your-repo-url>
+   cd <your-repo-name>
+   ```
 
+2. **Install Dependencies**  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the API**  
+   ```bash
+   python -m flask run
+   ```
+   By default, Flask runs the server on `http://127.0.0.1:5000/`.
+
+4. **Testing the API**  
+   Use tools like:
+   - **cURL** (Command Line)
+   - **Postman** (GUI API testing tool)
+   - Your **browser** (for simple GET requests)
+
+   Example cURL request to fetch all restaurants:
+   ```bash
+   curl http://127.0.0.1:5000/restaurants
+   ```
+
+5. **Stopping the Server**  
+   Press `CTRL+C` in the terminal to stop the Flask server.
+
+---
+```
 
