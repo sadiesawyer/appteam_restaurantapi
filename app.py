@@ -110,7 +110,7 @@ def add_review(restaurant_id):
 
 @app.route("/restaurants/reviews", methods=["GET"])
 def get_reviews():
-    query_type = request.args.get("type") 
+    query_type = request.args.get("type")  
     
     if query_type == 'id':
         restaurant_id = request.args.get("restaurant_id")
@@ -131,6 +131,27 @@ def get_reviews():
         return reviews_schema.jsonify(reviews)
     
     return jsonify({"message": "Invalid query type."}), 400
+
+    
+   
+
+@app.route("/restaurants/average-rating/<path:identifier>", methods=["GET"])
+def get_average_rating(identifier):
+    if identifier.isdigit():
+        restaurant = Restaurant.query.get(int(identifier))
+    else:
+        restaurant = Restaurant.query.filter(func.lower(Restaurant.name) == func.lower(identifier)).first()
+
+    if not restaurant:
+        return jsonify({"message": "Restaurant not found."}), 404
+
+    average_rating = db.session.query(func.avg(Review.rating)).filter(Review.restaurant_id == restaurant.id).scalar()
+
+    if average_rating is not None:
+        return jsonify({"restaurant": restaurant.name, "average_rating": average_rating}), 200
+    else:
+        return jsonify({"message": "No reviews found for this restaurant."}), 404
+
 
 
 

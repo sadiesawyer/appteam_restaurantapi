@@ -26,6 +26,7 @@
             <option value="addRestaurant">Add a Restaurant</option>
             <option value="addReview">Add a Review</option>
             <option value="getReviews">Search Reviews</option>
+            <option value="getAverageRating">Get Average Rating</option>
         </select>
         <!-- These are the different text boxes that will show up based on the option chosen above, they all start with display
          none and are updated based on the queryType you select -->
@@ -35,7 +36,7 @@
         <input type="text" id="restaurantId" placeholder="Enter Restaurant ID" style="display:none;">
         <input type="text" id="restaurantCuisine" placeholder="Enter Cuisine Type" style="display:none;">
         <input type="text" id="restaurantLocation" placeholder="Enter Restaurant Location" style="display:none;">
-        <input type="text" id="reviewUser" placeholder="Enter Your Username" style="display:none;">
+        <input type="text" id="reviewUser" placeholder="Enter Username" style="display:none;">
         <input type="number" id="reviewRating" placeholder="Enter Rating (1-5)" style="display:none;">
         <input type="text" id="reviewComment" placeholder="Enter Review Comment" style="display:none;">
         <input type="text" id="reviewRestaurantName" placeholder="Enter Restaurant Name for Reviews" style="display:none;">
@@ -63,6 +64,9 @@
                 document.getElementById("restaurantId").style.display = "block";
                 document.getElementById("reviewUser").style.display = "block";
                 document.getElementById("reviewRestaurantName").style.display = "block"; 
+            } else if (queryType === "getAverageRating") {
+                document.getElementById("restaurantId").style.display = "block";
+                document.getElementById("restaurantName").style.display = "block";
             }
         }
 
@@ -123,6 +127,17 @@
                 }
 
                 url = `/restaurants/reviews?${query.toString()}`; }
+
+else if (queryType === "getAverageRating") {
+    let name = document.getElementById("restaurantName").value;
+    let restaurantId = document.getElementById("restaurantId").value;
+    if (name) {
+        url = `/restaurants/average-rating/${name}`;  
+    } else if (restaurantId) {
+        url = `/restaurants/average-rating/${restaurantId}`; 
+    }
+}
+
 
             if (options.method === "POST") {
                 options.headers = { "Content-Type": "application/json" };
