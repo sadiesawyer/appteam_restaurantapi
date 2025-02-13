@@ -62,10 +62,7 @@ Before running the API, ensure you have the following installed:
    By default, Flask runs the server on `http://127.0.0.1:5000/`.
 
 4. **Testing the API**  
-   Use tools like:
-   - **cURL** (Command Line)
-   - **Postman** (GUI API testing tool)
-   - Your **browser** (for simple GET requests)
+   Use tools like curl in the command line or Postman
 
    Example cURL request to fetch all restaurants:
    ```bash
@@ -73,7 +70,7 @@ Before running the API, ensure you have the following installed:
    ```
 
 5. **Stopping the Server**  
-   Press `CTRL+C` in the terminal to stop the Flask server.
+   Press *CTRL+C* in the terminal to stop the Flask server.
 
 ---
 ```
