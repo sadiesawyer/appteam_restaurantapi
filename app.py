@@ -165,9 +165,5 @@ def get_average_rating(identifier):
     else:
         return jsonify({"message": "No reviews found for this restaurant."}), 404
 
-
-
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
